@@ -158,17 +158,17 @@
         }
 
         function calculateInterestAmount(amount, days, interestRate) {
-            return (amount * interestRate / 100) * days;
+            return (amount * days *interestRate / 100) * (1 + 1/amount);
         }
 
         function calculateDailyIncrement(days) {
             return days * 4.75;
         }
 
-        function calculatePenaltyAmount(amount, days, exceededDays) {
+        function calculatePenaltyAmount(amount, interestRate, exceededDays) {
             // Define your penalty calculation logic here based on the provided expression
-            var penaltyFactor = 0; // Replace with your calculation
-            return calculateInterestAmount(amount, exceededDays, calculateInterestRate(amount)) + penaltyFactor;
+            var penaltyFactor = 5.75; // Replace with your calculation
+            return (amount* exceededDays * interestRate/100)* (1 + 1/amount) + penaltyFactor;
         }
 
         function calculateFactor(amount) {
