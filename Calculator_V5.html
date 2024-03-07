@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: grid;
+            gap: 10px;
+        }
+
+        label {
+            color: #666;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: calc(100% - 10px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            float: right;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculate Your Interest</h1>
+        <form id="loanForm">
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" required>
+
+            <label for="days">Days:</label>
+            <input type="number" id="days" name="days" required>
+
+            <label for="exceededDays">Days Exceeded:</label>
+            <input type="number" id="exceededDays" name="exceededDays" value="0">
+
+            <label for="factor">Factor:</label>
+            <input type="text" id="factor" name="factor" readonly>
+
+            <label for="interestRate">Interest Rate:</label>
+            <input type="text" id="interestRate" name="interestRate" readonly>
+
+            <label for="interestAmount">Interest Amount:</label>
+            <input type="text" id="interestAmount" name="interestAmount" readonly>
+
+            <label for="dailyIncrement">Daily Increment:</label>
+            <input type="text" id="dailyIncrement" name="dailyIncrement" readonly>
+
+            <label for="penaltyAmount">Penalty Amount:</label>
+            <input type="text" id="penaltyAmount" name="penaltyAmount" readonly>
+
+            <label for="totalInterest">Total Interest:</label>
+            <input type="text" id="totalInterest" name="totalInterest" readonly>
+
+            <label for="paybackAmount">Payback Amount:</label>
+            <input type="text" id="paybackAmount" name="paybackAmount" readonly>
+
+            <button type="button" onclick="calculate()">Calculate</button>
+        </form>
+    </div>
+
+    <script>
+        function calculate() {
+            var amount = parseFloat(document.getElementById("amount").value);
+            var days = parseInt(document.getElementById("days").value);
+            var exceededDays = parseInt(document.getElementById("exceededDays").value);
+            var interestRate = calculateInterestRate(amount);
+            document.getElementById("interestRate").value = interestRate.toFixed(2) + "%";
+
+            var interestAmount = calculateInterestAmount(amount, days, interestRate);
+            document.getElementById("interestAmount").value = interestAmount.toFixed(2);
+
+            var dailyIncrement = calculateDailyIncrement(days);
+            document.getElementById("dailyIncrement").value = dailyIncrement.toFixed(2);
+
+            var penaltyAmount = calculatePenaltyAmount(amount, days, exceededDays);
+            document.getElementById("penaltyAmount").value = penaltyAmount.toFixed(2);
+
+            var totalInterest = interestAmount + dailyIncrement + penaltyAmount;
+            document.getElementById("totalInterest").value = totalInterest.toFixed(2);
+
+            var paybackAmount = amount + totalInterest;
+            document.getElementById("paybackAmount").value = paybackAmount.toFixed(2);
+
+            var factor = calculateFactor(amount);
+            document.getElementById("factor").value = factor.toFixed(2);
+        }
+
+        function calculateInterestRate(amount) {
+            var lookupTable = [
+                { min: 100, max: 150, rate: 1.3 },
+                { min: 151, max: 200, rate: 1.35 },
+                { min: 201, max: 250, rate: 1.4 },
+                { min: 251, max: 300, rate: 1.45 },
+                { min: 301, max: 350, rate: 1.5 },
+                { min: 351, max: 400, rate: 1.55 },
+                { min: 401, max: 450, rate: 1.6 },
+                { min: 451, max: 500, rate: 1.65 },
+                { min: 501, max: 550, rate: 1.7 },
+                { min: 551, max: 600, rate: 1.75 },
+                { min: 601, max: 650, rate: 1.8 },
+                { min: 651, max: 700, rate: 1.85 },
+                { min: 701, max: 750, rate: 1.9 },
+                { min: 751, max: 800, rate: 1.95 },
+                { min: 801, max: 850, rate: 2 },
+                { min: 851, max: 900, rate: 2.05 },
+                { min: 901, max: Infinity, rate: 2.1 }
+            ];
+
+            for (var i = 0; i < lookupTable.length; i++) {
+                if (amount >= lookupTable[i].min && amount <= lookupTable[i].max) {
+                    return lookupTable[i].rate;
+                }
+            }
+
+            return 0; // Default rate if not found
+        }
+
+        function calculateInterestAmount(amount, days, interestRate) {
+            return (amount * interestRate / 100) * days;
+        }
+
+        function calculateDailyIncrement(days) {
+            return days * 4.75;
+        }
+
+        function calculatePenaltyAmount(amount, days, exceededDays) {
+            // Define your penalty calculation logic here based on the provided expression
+            var penaltyFactor = 0; // Replace with your calculation
+            return calculateInterestAmount(amount, exceededDays, calculateInterestRate(amount)) + penaltyFactor;
+        }
+
+        function calculateFactor(amount) {
+            if (amount !== 0) {
+                return 1 + 1 / amount;
+            } else {
+                return ""; // Empty factor if amount is 0
+            }
+        }
+    </script>
+</body>
+</html>
