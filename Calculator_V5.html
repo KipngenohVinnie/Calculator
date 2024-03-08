@@ -169,7 +169,7 @@
         function calculatePenaltyAmount(amount, interestRate, exceededDays) {
             // Define your penalty calculation logic here based on the provided expression
             var penaltyFactor = 5.75; // Replace with your calculation
-            return (amount* exceededDays * interestRate/100)* (1 + 1/amount) + penaltyFactor;
+            return (amount* exceededDays * interestRate/100)* (1 + 1/amount) + (penaltyFactor * exceededDays);
         }
 
         function calculateFactor(amount) {
