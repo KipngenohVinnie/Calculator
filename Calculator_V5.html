@@ -75,8 +75,9 @@
 
             <label for="exceededDays">Days Exceeded:</label>
             <input type="number" id="exceededDays" name="exceededDays" value="0">
-
+            
             <button type="button" onclick="calculate()">Calculate</button>
+
 
             <label for="interestRate">Interest Rate:</label>
             <input type="text" id="interestRate" name="interestRate" readonly>
@@ -95,6 +96,8 @@
 
             <label for="paybackAmount">Payback Amount:</label>
             <input type="text" id="paybackAmount" name="paybackAmount" readonly>
+            
+            
 
         </form>
     </div>
@@ -157,17 +160,16 @@
         }
 
         function calculateInterestAmount(amount, days, interestRate) {
-            return (amount * days *interestRate / 100) * (1 + 1/amount);
+            return (amount * days * interestRate / 100) * (1 + 1/amount);
         }
 
         function calculateDailyIncrement(days) {
             return days * 4.75;
         }
 
-        function calculatePenaltyAmount(amount, interestRate, exceededDays) {
-            // Define your penalty calculation logic here based on the provided expression
-            var penaltyFactor = 5.75; // Replace with your calculation
-            return (amount* exceededDays * interestRate/100)* (1 + 1/amount) + (penaltyFactor * exceededDays);
+        function calculatePenaltyAmount(amount, days, exceededDays) {
+            var interestRate = calculateInterestRate(amount);
+            return (amount * exceededDays * interestRate / 100) * (1 + 1/amount)+5.75*exceededDays;
         }
 
         function calculateFactor(amount) {
